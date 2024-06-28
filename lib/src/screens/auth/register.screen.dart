@@ -4,6 +4,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:state_change_demo/src/controllers/auth_controller.dart';
 import 'package:state_change_demo/src/dialogs/waiting_dialog.dart';
 import 'package:state_change_demo/src/routing/router.dart';
+import 'package:state_change_demo/src/screens/auth/login.screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -59,6 +60,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ElevatedButton(
                 onPressed: () {
                   onSubmit();
+                  GlobalRouter.I.router.go(LoginScreen.route);
                 },
                 child: const Text("Create your Account"),
               ),

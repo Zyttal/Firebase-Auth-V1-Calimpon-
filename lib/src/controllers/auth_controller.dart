@@ -66,7 +66,6 @@ class AuthController with ChangeNotifier {
     }
   }
 
-  ///write code to log out the user and add it to the home page.
   logout() async {
     await _auth.signOut();
     state = AuthState.unauthenticated;
@@ -74,8 +73,6 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
-  ///must be called in main before runApp
-  ///
   loadSession() async {
     try {
       String? token = await _secureStorage.read(key: 'token');
@@ -87,8 +84,6 @@ class AuthController with ChangeNotifier {
       state = AuthState.unauthenticated;
     }
   }
-
-  ///https://pub.dev/packages/flutter_secure_storage or any caching dependency of your choice like localstorage, hive, or a db
 }
 
 class SimulatedAPI {

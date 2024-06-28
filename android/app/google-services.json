@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "164488414712",
+    "project_id": "fir-auth-calimpon",
+    "storage_bucket": "fir-auth-calimpon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164488414712:android:2d74ccae963e40a20ac20d",
+        "android_client_info": {
+          "package_name": "com.example.state_change_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDipcuKFuwl_R__R0YoRaemOmaSnMknpFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

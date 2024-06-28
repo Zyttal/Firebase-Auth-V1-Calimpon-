@@ -4,18 +4,17 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:state_change_demo/src/controllers/auth_controller.dart';
 import 'package:state_change_demo/src/dialogs/waiting_dialog.dart';
 import 'package:state_change_demo/src/routing/router.dart';
-import 'package:state_change_demo/src/screens/auth/register.screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const String route = "/auth";
-  static const String name = "Login Screen";
-  const LoginScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
+  static const String name = "Registration Screen";
+  static const String route = "/register";
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   late GlobalKey<FormState> formKey;
   late TextEditingController email, password;
   late FocusNode emailFn, passwordFn;
@@ -48,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: const Text("Login"),
+        title: const Text("Registration"),
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
@@ -59,15 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  GlobalRouter.I.router.go(RegistrationScreen.route);
-                },
-                child: const Text("Register an Account"),
-              ),
-              ElevatedButton(
-                onPressed: () {
                   onSubmit();
                 },
-                child: const Text("Login"),
+                child: const Text("Create your Account"),
               ),
             ],
           ),
@@ -151,8 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
   onSubmit() {
     if (formKey.currentState?.validate() ?? false) {
       WaitingDialog.show(context,
-          future:
-              AuthController.I.login(email.text.trim(), password.text.trim()));
+          future: AuthController.I
+              .register(email.text.trim(), password.text.trim()));
     }
   }
 

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:state_change_demo/src/enum/enum.dart';
@@ -13,22 +16,54 @@ class AuthController with ChangeNotifier {
 
   static AuthController get I => GetIt.instance<AuthController>();
 
-  AuthState state = AuthState.unauthenticated;
-  SimulatedAPI api = SimulatedAPI();
+  late StreamSubscription<User?> currentAuthedUser;
 
-  login(String userName, String password) async {
-    bool isLoggedIn = await api.login(userName, password);
-    if (isLoggedIn) {
+  listen() {
+    currentAuthedUser =
+        FirebaseAuth.instance.authStateChanges().listen(handleUserChanges);
+  }
+
+  void handleUserChanges(User? user) {
+    if (user == null) {
+      state = AuthState.unauthenticated;
+    } else {
       state = AuthState.authenticated;
-      //should store session
+    }
+    notifyListeners();
+  }
+
+  AuthState state = AuthState.unauthenticated;
+  // SimulatedAPI api = SimulatedAPI();
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  login(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      currentAuthedUser = _auth.authStateChanges().listen(handleUserChanges);
 
       notifyListeners();
+    } catch (e) {
+      print("Failed to login: $e");
+    }
+  }
+
+  register(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      currentAuthedUser = _auth.authStateChanges().listen(handleUserChanges);
+      notifyListeners();
+    } catch (e) {
+      print("Failed to Register: $e");
     }
   }
 
   ///write code to log out the user and add it to the home page.
-  logout() {
-    //should clear session
+  logout() async {
+    await _auth.signOut();
+    state = AuthState.unauthenticated;
+    notifyListeners();
   }
 
   ///must be called in main before runApp

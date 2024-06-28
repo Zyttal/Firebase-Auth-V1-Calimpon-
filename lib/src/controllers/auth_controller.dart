@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:state_change_demo/src/enum/enum.dart';
 
@@ -13,10 +14,17 @@ class AuthController with ChangeNotifier {
 
   // Static getter to access the instance through GetIt
   static AuthController get instance => GetIt.instance<AuthController>();
-
   static AuthController get I => GetIt.instance<AuthController>();
-
   late StreamSubscription<User?> currentAuthedUser;
+  AuthState state = AuthState.unauthenticated;
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  late FlutterSecureStorage _secureStorage;
+
+  AuthController() {
+    _auth = FirebaseAuth.instance;
+    _secureStorage = const FlutterSecureStorage();
+    listen();
+  }
 
   listen() {
     currentAuthedUser =
@@ -32,15 +40,14 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
-  AuthState state = AuthState.unauthenticated;
-  // SimulatedAPI api = SimulatedAPI();
-  FirebaseAuth _auth = FirebaseAuth.instance;
-
   login(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       currentAuthedUser = _auth.authStateChanges().listen(handleUserChanges);
+
+      String? token = await userCredential.user!.getIdToken();
+      await _secureStorage.write(key: 'token', value: token);
 
       notifyListeners();
     } catch (e) {
@@ -63,13 +70,22 @@ class AuthController with ChangeNotifier {
   logout() async {
     await _auth.signOut();
     state = AuthState.unauthenticated;
+    await _secureStorage.delete(key: 'token');
     notifyListeners();
   }
 
   ///must be called in main before runApp
   ///
   loadSession() async {
-    //check secure storage method
+    try {
+      String? token = await _secureStorage.read(key: 'token');
+      if (token != null) {
+        state = AuthState.authenticated;
+      }
+    } catch (e) {
+      print("Failed to load session: $e");
+      state = AuthState.unauthenticated;
+    }
   }
 
   ///https://pub.dev/packages/flutter_secure_storage or any caching dependency of your choice like localstorage, hive, or a db
